@@ -1,3 +1,6 @@
+import random
+import time
+
 class Porta():
 
     def __init__(self, situacao, posicao):
@@ -42,10 +45,12 @@ class Corredor():
 #-------------------------------------------------------------
 class Pessoa():
 
-    def __init__(self, nome):
+    def __init__(self,nome,assento=None):
         self.nome = nome
         self.setPosicao(1)
         self.time = 0
+        self.assento = assento
+        self.entrada = None
 
     def getNome(self):
         return self.nome
@@ -101,19 +106,7 @@ class Pessoa():
 
 
 #-------------------------------------------------------------
-class Assento:
 
-    def __init__(self, numeroAssento):
-        self.numero = numeroAssento
-        self.ocupado = False
 
-    def ocuparAssento(self, pessoa):
-        self.passageiro = pessoa
-        self.ocupado = True
         
-    
-
-class Classe:
-    def __init__(self,nome):
-        self.nomeClasse = nome
-        self.assentos = []
+        
