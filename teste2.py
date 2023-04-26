@@ -41,7 +41,7 @@ class Classe:
 
 class Aviao:
 
-    classesDisponiveis = ['1° Classe','2° Classe','Classe Economica']
+    classesDisponiveis = ['Classe Economica']
     filas = ['A','B','C','D','E','F','G','H']
 
     def __init__(self):
@@ -50,7 +50,7 @@ class Aviao:
 
         self.corredor = []
         for i in range( int(Classe.quantidadeAssentos / Classe.assentosPorFila) ):
-            self.corredor.append('VAZIO')
+            self.corredor.append(None)
 
         for classe in self.classesDisponiveis:
             
@@ -68,16 +68,58 @@ class Aviao:
 
                 classObj.assentosDisponiveis.append(numeroAssento)
                 classObj.assentos.append(Assento(numeroAssento))
-                print(numeroAssento)
+                # print(numeroAssento)
             
             self.classes.append(classObj)
+
+    def corredorVazio(self):
+        for i in self.corredor:
+            if i !=None:
+                return False
+        return True
+            
+        
+    def colocarfila(self, passageiro):
+        if self.corredor[0]==None:
+            self.corredor[0] = passageiro
+            return True
+        else:
+            return False
+    
+    def andarFila(self):
+        
+        for index, passageiro in enumerate(reversed(self.corredor)):
+
+            if passageiro==None:
+                continue
+
+            posicao = len(self.corredor)-1 - index
+
+            #ta na fila certa
+            if posicao+1 == passageiro.numFila:
+                if not passageiro.tempoBagagem or not passageiro.temBagagem:
+                    self.classes[0].ocuparAssento( passageiro = passageiro , numero = passageiro.assento)
+                    self.corredor[posicao] = None
+                    passageiro.colocandoBagagem = False
+                    continue
+                else:
+                    passageiro.tempoBagagem-=1
+                    passageiro.colocandoBagagem = True
+                    continue
+   
+            if posicao >= len(self.corredor)-1:
+                continue
+
+            if self.corredor[posicao+1] == None:
+                self.corredor[posicao+1], self.corredor[posicao] = self.corredor[posicao], self.corredor[posicao+1]
+    
 
     def __str__(self):
         string = ''
         for classe in self.classes:
             string += f'\n\nCLASSE [{classe.nomeClasse}]'
             #string += f'\n    A    B    C    D   |  |   E    F    G    H  '
-            string += f'\n\n   [A.][B.][C.][D.] | {self.corredor[0]} | [E.][F.][G.][H.]'
+            string += f'\n\n   [A.][B.][C.][D.] |      | [E.][F.][G.][H.]'
             contador = 0
             x = 1
             y = 1
@@ -85,13 +127,22 @@ class Aviao:
                 if x == 1:
                     string += f'\n {y} '
                 if assento.ocupado:
-                    string += f'<{assento.passageiro.nome}>'
+                    string += f'<{assento.passageiro.ordemEntrada}>'
                 else:
                     #string += '[   ]'
                     string += f'[{assento.numero}]'
                 contador += 1
                 if contador == int( classe.assentosPorFila / 2 ):
-                    string += f' | {self.corredor[0]} | '
+                    if self.corredor[y-1]!=None:
+                        if self.corredor[y-1].temBagagem:
+                            if self.corredor[y-1].colocandoBagagem:
+                                string += f' |  {self.corredor[y-1].ordemEntrada}- | '
+                            else:
+                                string += f' |  {self.corredor[y-1].ordemEntrada}+ | '
+                        else:
+                            string += f' |  {self.corredor[y-1].ordemEntrada}  | '
+                    else:
+                        string += f' | {self.corredor[y-1]} | '
                 x += 1
                 if contador == classe.assentosPorFila:
                     contador = 0
@@ -102,30 +153,49 @@ class Aviao:
 aviao = Aviao()
 print(aviao)
 
-filaDeEmbarque = ['F6','A2','G4','B5']
+# filaDeEmbarque = ['F6','A2','G4','B5']
 contadorEntrada = 0
+
+# filaDeEmbarque2 = [Pessoa("Ana", "F6", True), Pessoa("Pedro", "A2"),Pessoa("Julia", "B5", True)]
+posicoes = []
+for i in ['A','B','C','D','E','F','G','H']:
+    for numero in range(1,10):
+        posicoes.append(f'{i}{numero}')
+# print(posicoes)
+
+filaDeEmbarque2 = []
+
+while posicoes != []:
+    posicao = random.choice(posicoes)
+    filaDeEmbarque2.append(Pessoa('nome',posicao,random.choice([True,False])))
+    posicoes.remove(posicao)
 
 for classe in aviao.classes:
 
-    while not classe.lotada and filaDeEmbarque != []:
+    while filaDeEmbarque2 != [] or not aviao.corredorVazio():
 
-        nome = ''
-        if(contadorEntrada < 10):
-            nome = '0' + str(contadorEntrada)
-        else:
-            nome = str(contadorEntrada)
+        aviao.andarFila()
         
-        posicao = filaDeEmbarque.pop(0)
-        passageiro = Pessoa(nome,posicao)
-        classe.ocuparAssento( passageiro = passageiro , numero = passageiro.assento )
-        time.sleep(0.1)
+        ordem = ''
+        if(contadorEntrada < 10):
+            ordem = '0' + str(contadorEntrada)
+        else:
+             ordem = str(contadorEntrada)
+        
+        if filaDeEmbarque2 != []:
+            passageiro = filaDeEmbarque2[0]
+            passageiro.ordemEntrada = ordem
+        # passageiro = Pessoa(nome,posicao)
+
+            if aviao.colocarfila(passageiro):
+                filaDeEmbarque2.pop(0)    
+                contadorEntrada += 1    
+        
+        time.sleep(1)
         os.system('clear')
+        print('quantidade para embarcar:',len(filaDeEmbarque2))
         print(aviao)
 
-        contadorEntrada += 1
+        
 
 print('\n')
-
-
-
-

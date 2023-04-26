@@ -45,12 +45,17 @@ class Corredor():
 #-------------------------------------------------------------
 class Pessoa():
 
-    def __init__(self,nome,assento=None):
+    def __init__(self,nome,assento=None, temBagagem = False):
         self.nome = nome
         self.setPosicao(1)
         self.time = 0
         self.assento = assento
+        self.numFila = int(assento[1:])
         self.entrada = None
+        self.ordemEntrada = 0
+        self.temBagagem = temBagagem
+        self.tempoBagagem = 3
+        self.colocandoBagagem = False
 
     def getNome(self):
         return self.nome
