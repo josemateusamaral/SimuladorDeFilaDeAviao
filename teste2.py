@@ -2,6 +2,7 @@ from classes import *
 import time
 import os
 import random
+import copy
 
 class Assento:
 
@@ -117,8 +118,8 @@ class Aviao:
     def __str__(self):
         string = ''
         for classe in self.classes:
-            string += f'\n\nCLASSE [{classe.nomeClasse}]'
-            #string += f'\n    A    B    C    D   |  |   E    F    G    H  '
+            #string += f'\nCLASSE [{classe.nomeClasse}]'
+            string += f'\n[---AVIÃO---]'
             string += f'\n\n   [A.][B.][C.][D.] |      | [E.][F.][G.][H.]'
             contador = 0
             x = 1
@@ -129,7 +130,6 @@ class Aviao:
                 if assento.ocupado:
                     string += f'<{assento.passageiro.ordemEntrada}>'
                 else:
-                    #string += '[   ]'
                     string += f'[{assento.numero}]'
                 contador += 1
                 if contador == int( classe.assentosPorFila / 2 ):
@@ -150,52 +150,68 @@ class Aviao:
                     x = 1
         return string
 
-aviao = Aviao()
-print(aviao)
+sequenciasTestadas = []
+melhorSequencia = []
+melhorTempo = None
+quantidadeSimulacoes = 100
 
-# filaDeEmbarque = ['F6','A2','G4','B5']
-contadorEntrada = 0
+for index,i in enumerate(range(quantidadeSimulacoes)):
 
-# filaDeEmbarque2 = [Pessoa("Ana", "F6", True), Pessoa("Pedro", "A2"),Pessoa("Julia", "B5", True)]
-posicoes = []
-for i in ['A','B','C','D','E','F','G','H']:
-    for numero in range(1,10):
-        posicoes.append(f'{i}{numero}')
-# print(posicoes)
+    aviao = Aviao()
+    tempo = 0
+    contadorEntrada = 0
 
-filaDeEmbarque2 = []
-
-while posicoes != []:
-    posicao = random.choice(posicoes)
-    filaDeEmbarque2.append(Pessoa('nome',posicao,random.choice([True,False])))
-    posicoes.remove(posicao)
-
-for classe in aviao.classes:
-
-    while filaDeEmbarque2 != [] or not aviao.corredorVazio():
-
-        aviao.andarFila()
+    filaDeEmbarque2 = []
+    
+    while True:
         
-        ordem = ''
-        if(contadorEntrada < 10):
-            ordem = '0' + str(contadorEntrada)
-        else:
-             ordem = str(contadorEntrada)
+        posicoes = []
+        for i in ['A','B','C','D','E','F','G','H']:
+            for numero in range(1,10):
+                posicoes.append(f'{i}{numero}')
         
-        if filaDeEmbarque2 != []:
-            passageiro = filaDeEmbarque2[0]
-            passageiro.ordemEntrada = ordem
-        # passageiro = Pessoa(nome,posicao)
+        while posicoes != []:
+            posicao = random.choice(posicoes)
+            filaDeEmbarque2.append(Pessoa('nome',posicao,random.choice([True,False])))
+            posicoes.remove(posicao)
+            
+        if filaDeEmbarque2 not in sequenciasTestadas:
+            sequenciasTestadas.append(filaDeEmbarque2)
+            break
 
-            if aviao.colocarfila(passageiro):
-                filaDeEmbarque2.pop(0)    
-                contadorEntrada += 1    
+    for classe in aviao.classes:
+
+        while filaDeEmbarque2 != [] or not aviao.corredorVazio():
+
+            aviao.andarFila()
+            
+            ordem = ''
+            if(contadorEntrada < 10):
+                ordem = '0' + str(contadorEntrada)
+            else:
+                ordem = str(contadorEntrada)
+            
+            if filaDeEmbarque2 != []:
+                passageiro = filaDeEmbarque2[0]
+                passageiro.ordemEntrada = ordem
+
+                if aviao.colocarfila(passageiro):
+                    filaDeEmbarque2.pop(0)    
+                    contadorEntrada += 1    
+            
+            time.sleep(1)
+            tempo += 1
+            os.system('clear')
+            print(f'simulação: {index + 1} de {quantidadeSimulacoes}')
+            print('melhor tempo:',melhorTempo)
+            print('faltando embarcar:',len(filaDeEmbarque2))
+            print('tempo:',tempo)
+            print(aviao)
+
+    if melhorTempo == None or tempo < melhorTempo:
+        melhorTempo = tempo
+        melhorSequencia = copy.copy(filaDeEmbarque2)
         
-        time.sleep(1)
-        os.system('clear')
-        print('quantidade para embarcar:',len(filaDeEmbarque2))
-        print(aviao)
-
+print('melhor sequencia:',melhorSequencia)
+print('melhorTempo:',melhorTempo)
         
-
-print('\n')
