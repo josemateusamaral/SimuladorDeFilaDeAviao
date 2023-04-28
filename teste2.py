@@ -162,6 +162,7 @@ for index,i in enumerate(range(quantidadeSimulacoes)):
     contadorEntrada = 0
 
     filaDeEmbarque2 = []
+    sequencia = []
     
     while True:
         
@@ -173,6 +174,7 @@ for index,i in enumerate(range(quantidadeSimulacoes)):
         while posicoes != []:
             posicao = random.choice(posicoes)
             filaDeEmbarque2.append(Pessoa('nome',posicao,random.choice([True,False])))
+            sequencia.append(posicao)
             posicoes.remove(posicao)
             
         if filaDeEmbarque2 not in sequenciasTestadas:
@@ -199,8 +201,10 @@ for index,i in enumerate(range(quantidadeSimulacoes)):
                     filaDeEmbarque2.pop(0)    
                     contadorEntrada += 1    
             
-            time.sleep(1)
             tempo += 1
+            continue
+            
+            time.sleep(1)
             os.system('clear')
             print(f'simulação: {index + 1} de {quantidadeSimulacoes}')
             print('melhor tempo:',melhorTempo)
@@ -210,7 +214,7 @@ for index,i in enumerate(range(quantidadeSimulacoes)):
 
     if melhorTempo == None or tempo < melhorTempo:
         melhorTempo = tempo
-        melhorSequencia = copy.copy(filaDeEmbarque2)
+        melhorSequencia = sequencia
         
 print('melhor sequencia:',melhorSequencia)
 print('melhorTempo:',melhorTempo)
